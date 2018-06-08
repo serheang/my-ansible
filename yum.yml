@@ -1,0 +1,39 @@
+---
+- name: "{{ item.name }}"
+  when: 
+    - ansible_os_family == 'RedHat' 
+    - extra_repo is defined
+  yum: 
+    name: "{{ item.reporpm }}"
+    state: "{{ item.state }}"
+  with_items:
+    - "{{ extra_repo }}"
+- name: EL6 Repos
+  when: 
+    - ansible_os_family == 'RedHat' 
+    - ansible_distribution_major_version == "6" 
+    - el6_repo is defined
+  yum: 
+    name: "{{ item.reporpm }}"
+    state: "{{ item.state }}"
+  with_items:
+    - "{{ el6_repo }}"
+- name: EL7 Repos
+  when: 
+    - ansible_os_family == 'RedHat' 
+    - ansible_distribution_major_version == "7" 
+    - el6_repo is defined
+  yum: 
+    name: "{{ item.reporpm }}"
+    state: "{{ item.state }}"
+  with_items:
+    - "{{ el7_repo }}"
+
+- name: Repos
+  when: 
+    - repo is defined
+  yum: 
+    name: "{{ item.reporpm }}"
+    state: "{{ item.state }}"
+  with_items:
+    - "{{ repo }}"

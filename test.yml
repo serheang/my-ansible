@@ -1,0 +1,7 @@
+---
+- hosts: test
+  remote_user: root
+  vars_files:
+    - default.yml
+  tasks:
+    - include_tasks: yum.yml
