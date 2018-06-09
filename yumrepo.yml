@@ -1,77 +1,45 @@
 ---
-## This is to setup some extra yum repo for RHEL
-## but not sure about what apt repo for DEBIAN. 
-## So, this will be only RHEL
-
-- name: For RHEL
-  when: ansible_os_family == "RedHat"
+- name: RedHat
+  when: 
+    - ansible_os_family == 'RedHat' 
+    - extra_repo is defined
   block:
-    # Extra Packages for Enterprise Linux (EPEL) - (See http://fedoraproject.org/wiki/EPEL) 
-    - name: EPEL repo
-      yum:
-        name: epel-release
-        state: present
-        update_cache: yes
-    - name: nux-dextop GPG Key
-      rpm_key:
-        state: present
-        key: http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro
-      
-    - name: ELRepo GPG Key
-      rpm_key:
-        state: present
-        key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
-      
-    # nux-dextop(see http://li.nux.ro/repos.html) provides desktop and multimedia oriented packages for EL6 and 7
-    - name: nux-dextop EL6 repo
-      when: ansible_distribution_major_version == "6"
-      yum:
-        name: http://li.nux.ro/download/nux/dextop/el6/x86_64/nux-dextop-release-0-2.el6.nux.noarch.rpm
-        state: present
-    - name: nux-dextop EL7 repo
-      when: ansible_distribution_major_version == "7"
-      yum:
-        name: http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
-        state: present
-    # Remi Repository - (See http://rpms.remirepo.net/)
-    - name: Remi EL6 repo
-      when: ansible_distribution_major_version == "6"
-      yum:
-        name: https://rpms.remirepo.net/enterprise/remi-release-6.rpm
-        state: present
-    - name: Remi EL7 repo
-      when: ansible_distribution_major_version == "7"
-      yum:
-        name: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-        state: present
-    # RPMfusion Repository - (See http://rpmfusion.org/) 
-    - name: RPMFusion EL6 free repo
-      when: ansible_distribution_major_version == "6"
-      yum:
-        name: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-6.noarch.rpm
-        state: present
-    - name: RPMFusion EL7 free repo
-      when: ansible_distribution_major_version == "7"
-      yum:
-        name: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
-        state: present
-    - name: RPMFusion EL6 nonfree repo
-      when: ansible_distribution_major_version == "6"
-      yum:
-        name: https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-6.noarch.rpm
-        state: present
-    - name: RPMFusion EL7 nonfree repo
-      when: ansible_distribution_major_version == "7"
-      yum:
-        name: https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
-        state: present
-    - name: ELRepo EL6 repo
-      when: ansible_distribution_major_version == "6"
-      yum:
-        name:  http://www.elrepo.org/elrepo-release-6-8.el6.elrepo.noarch.rpm
-        state: present
-    - name: ELRepo EL7 repo
-      when: ansible_distribution_major_version == "7"
-      yum:
-        name:  http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
-        state: present
+    - name: YUM install repos rpm
+      yum: 
+        name: "{{ item.reporpm }}"
+        state: "{{ item.state }}"
+      with_items:
+        - "{{ extra_repo }}"
+    - name: Install RPM GPG Keys
+      when:
+        - rpm_gpgkey is defined
+      block:
+        - rpm_key:
+            state: "{{ item.state }}"
+            key: "{{ item.gpgkey }}"
+          with_items:
+            - "{{ rpm_gpgkey }}"
+    - name: EL6 Repos
+      when: 
+        - ansible_distribution_major_version == "6" 
+        - el6_repo is defined
+      block:
+        - name: YUM install EL6 repos rpm
+          yum: 
+            name: "{{ item.reporpm }}"
+            state: "{{ item.state }}"
+          with_items:
+            - "{{ el6_repo }}"
+
+    - name: EL7 Repos
+      when: 
+        - ansible_distribution_major_version == "7" 
+        - el7_repo is defined
+      block:
+        - name: YUM install EL7 repos rpm
+          yum: 
+            name: "{{ item.reporpm }}"
+            state: "{{ item.state }}"
+          with_items:
+            - "{{ el7_repo }}"
+
