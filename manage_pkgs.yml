@@ -1,0 +1,18 @@
+---
+## this is to manage pkgs
+install_pkg:
+  - telnet
+  - ansible
+
+remove_pkg:
+  - NetworkManager
+  - ksh
+
+el6_instal_pkg: ''
+el6_remove_pkg: ''
+
+el7_instal_pkg:
+  - python34
+ 
+el7_remove_pkg:
+  - httpd

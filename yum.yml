@@ -1,0 +1,71 @@
+---
+- name: RedHat YUM remove
+  when: 
+    - ansible_os_family == 'RedHat' 
+  block:
+    - name: YUM remove
+      when:
+        - remove_pkg is defined
+      yum: 
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ remove_pkg }}"
+    - name: YUM remove EL6 repos rpm
+      when: 
+        - ansible_distribution_major_version == "6" 
+        - el6_remove_pkg is defined
+      yum: 
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ el6_remove_pkg }}"
+    - name: YUM remove EL7 repos rpm
+      when:
+        - ansible_distribution_major_version == "7" 
+        - el7_remove_pkg is defined
+      yum: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - "{{ el7_remove_pkg }}"
+
+- name: RedHat YUM install
+  when: 
+    - ansible_os_family == 'RedHat' 
+  block:
+    - name: YUM install
+      when:
+        - install_pkg is defined
+      yum: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - "{{ install_pkg }}"
+
+    - name: YUM install EL6 repos rpm
+      when: 
+        - ansible_distribution_major_version == "6" 
+        - el6_install_pkg is defined
+      yum: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - "{{ el6_install_pkg }}"
+
+    - name: YUM install EL7 repos rpm
+      when: 
+        - ansible_distribution_major_version == "7" 
+        - el7_install_pkg is defined
+      yum: 
+        name: "{{ item. }}"
+        state: present
+      with_items:
+        - "{{ el7_install_pkg }}"
+
+- name: RedHat YUM update
+  when: 
+    - ansible_os_family == 'RedHat' 
+  yum:
+    name: '*'
+    state: latest
