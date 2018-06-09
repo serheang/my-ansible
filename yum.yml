@@ -1,39 +1,45 @@
 ---
-- name: "{{ item.name }}"
+- name: RedHat
   when: 
     - ansible_os_family == 'RedHat' 
     - extra_repo is defined
-  yum: 
-    name: "{{ item.reporpm }}"
-    state: "{{ item.state }}"
-  with_items:
-    - "{{ extra_repo }}"
-- name: EL6 Repos
-  when: 
-    - ansible_os_family == 'RedHat' 
-    - ansible_distribution_major_version == "6" 
-    - el6_repo is defined
-  yum: 
-    name: "{{ item.reporpm }}"
-    state: "{{ item.state }}"
-  with_items:
-    - "{{ el6_repo }}"
-- name: EL7 Repos
-  when: 
-    - ansible_os_family == 'RedHat' 
-    - ansible_distribution_major_version == "7" 
-    - el6_repo is defined
-  yum: 
-    name: "{{ item.reporpm }}"
-    state: "{{ item.state }}"
-  with_items:
-    - "{{ el7_repo }}"
+  block:
+    - name: YUM install repos rpm
+      yum: 
+        name: "{{ item.reporpm }}"
+        state: "{{ item.state }}"
+      with_items:
+        - "{{ extra_repo }}"
+    - name: Install RPM GPG Keys
+      when:
+        - rpm_gpgkey is defined
+      block:
+        - rpm_key:
+            state: "{{ item.state }}"
+            key: "{{ item.gpgkey }}"
+          with_items:
+            - "{{ rpm_gpgkey }}"
+    - name: EL6 Repos
+      when: 
+        - ansible_distribution_major_version == "6" 
+        - el6_repo is defined
+      block:
+        - name: YUM install EL6 repos rpm
+          yum: 
+            name: "{{ item.reporpm }}"
+            state: "{{ item.state }}"
+          with_items:
+            - "{{ el6_repo }}"
 
-- name: Repos
-  when: 
-    - repo is defined
-  yum: 
-    name: "{{ item.reporpm }}"
-    state: "{{ item.state }}"
-  with_items:
-    - "{{ repo }}"
+    - name: EL7 Repos
+      when: 
+        - ansible_distribution_major_version == "7" 
+        - el7_repo is defined
+      block:
+        - name: YUM install EL7 repos rpm
+          yum: 
+            name: "{{ item.reporpm }}"
+            state: "{{ item.state }}"
+          with_items:
+            - "{{ el7_repo }}"
+
