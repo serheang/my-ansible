@@ -17,6 +17,11 @@
         state: present
         key: http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro
       
+    - name: ELRepo GPG Key
+      rpm_key:
+        state: present
+        key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+      
     # nux-dextop(see http://li.nux.ro/repos.html) provides desktop and multimedia oriented packages for EL6 and 7
     - name: nux-dextop EL6 repo
       when: ansible_distribution_major_version == "6"
@@ -59,4 +64,14 @@
       when: ansible_distribution_major_version == "7"
       yum:
         name: https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
+        state: present
+    - name: ELRepo EL6 repo
+      when: ansible_distribution_major_version == "6"
+      yum:
+        name:  http://www.elrepo.org/elrepo-release-6-8.el6.elrepo.noarch.rpm
+        state: present
+    - name: ELRepo EL7 repo
+      when: ansible_distribution_major_version == "7"
+      yum:
+        name:  http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
         state: present
