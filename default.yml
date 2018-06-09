@@ -2,45 +2,6 @@
     # nux-dextop(see http://li.nux.ro/repos.html) provides desktop and multimedia oriented packages for EL6 and 7
     # Remi Repository - (See http://rpms.remirepo.net/)
     # RPMfusion Repository - (See http://rpmfusion.org/) 
-extra_repo: 
-  - name: EPEL repo
-    reporpm: epel-release
-    state: present
-
-el7_repo: 
-  - name: ELRepo EL7 repo
-    reporpm:  http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
-    state: present
-  - name: nux-dextop EL7 repo
-    reporpm: http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
-    state: present
-  - name: Remi EL7 repo
-    reporpm: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-    state: present
-  - name: RPMFusion EL7 free repo
-    reporpm: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
-    state: present
-  - name: RPMFusion EL7 nonfree repo
-    reporpm: https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
-    state: present
-
-el6_repo: 
-  - name: ELRepo EL6 repo
-    reporpm:  http://www.elrepo.org/elrepo-release-6-8.el6.elrepo.noarch.rpm
-    state: present
-  - name: nux-dextop EL6 repo
-    reporpm: http://li.nux.ro/download/nux/dextop/el6/x86_64/nux-dextop-release-0-2.el6.nux.noarch.rpm
-    state: present
-  - name: Remi EL6 repo
-    reporpm: https://rpms.remirepo.net/enterprise/remi-release-6.rpm
-    state: present
-  - name: RPMFusion EL6 free repo
-    reporpm: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-6.noarch.rpm
-    state: present
-  - name: RPMFusion EL6 nonfree repo
-    reporpm: https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-6.noarch.rpm
-    state: present
-
 rpm_gpgkey:
   - name: nux-dextop GPG Key
     gpgkey: http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro
@@ -49,3 +10,42 @@ rpm_gpgkey:
     gpgkey: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
     state: present
       
+extra_repo: 
+  - name: epel
+    reporpm: epel-release
+    state: present
+
+el7_repo: 
+  - name: elrepo
+    reporpm: "http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm"
+    state: present
+  - name: nux-dextop
+    reporpm: http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
+    state: present
+  - name: remi-safe
+    reporpm: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    state: present
+  - name: rpmfusion-free-updates
+    reporpm: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+    state: present
+  - name: rpmfusion-nonfree-updates
+    reporpm: https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
+    state: present
+
+el6_repo: 
+  - name: elrepo
+    reporpm:  http://www.elrepo.org/elrepo-release-6-8.el6.elrepo.noarch.rpm
+    state: present
+  - name: nux-dextop
+    reporpm: http://li.nux.ro/download/nux/dextop/el6/x86_64/nux-dextop-release-0-2.el6.nux.noarch.rpm
+    state: present
+  - name: remi-safe
+    reporpm: https://rpms.remirepo.net/enterprise/remi-release-6.rpm
+    state: present
+  - name: rpmfusion-free-updates
+    reporpm: https://download1.rpmfusion.org/free/el/rpmfusion-free-release-6.noarch.rpm
+    state: present
+  - name: rpmfusion-nonfree-updates
+    reporpm: https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-6.noarch.rpm
+    state: present
+
