@@ -2,11 +2,16 @@
 ## this is to manage pkgs
 install_pkg:
   - epel-release
-  - telnet
-  - ansible
-  - python34
+  - python-pip
 
 remove_pkg:
+  - telnet
   - NetworkManager
   - ksh
 
+el6_install_pkg:
+  - ansible
+
+el7_install_pkg:
+  - ansible
+  - python34
