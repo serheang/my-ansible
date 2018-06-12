@@ -3,7 +3,9 @@
   when: 
     - ansible_os_family == 'RedHat' 
   block:
-    - name: YUM remove
+    - name: Always ensure EPEL installed
+      yum: name=epel-release state=latest
+    - name: YUM remove "{{ remove_pkg }}"
       when:
         - remove_pkg is defined
       yum: 
@@ -11,7 +13,7 @@
         state: absent
       with_items:
         - "{{ remove_pkg }}"
-    - name: YUM install
+    - name: YUM install "{{ install_pkg }}"
       when:
         - install_pkg is defined
       yum: 
@@ -23,7 +25,7 @@
       when: 
         - ansible_distribution_major_version == "6" 
       block:
-        - name: YUM remove EL6 repos rpm
+        - name: YUM remove EL6 repos rpm "{{ el6_remove_pkg }}"
           when: 
             - el6_remove_pkg is defined
           yum: 
@@ -31,7 +33,7 @@
             state: absent
           with_items:
             - "{{ el6_remove_pkg }}"
-        - name: YUM install EL6 repos rpm
+        - name: YUM install EL6 repos rpm "{{ el6_install_pkg }}"
           when: 
             - el6_install_pkg is defined
           yum: 
@@ -43,7 +45,7 @@
       when: 
         - ansible_distribution_major_version == "7" 
       block:
-        - name: YUM remove EL7 repos rpm
+        - name: YUM remove EL7 repos rpm "{{ el7_remove_pkg }}"
           when:
             - el7_remove_pkg is defined
           yum: 
@@ -51,16 +53,16 @@
             state: present
           with_items:
             - "{{ el7_remove_pkg }}"
-        - name: YUM install EL7 repos rpm
+        - name: YUM install EL7 repos rpm "{{ el7_install_pkg }}"
           when: 
             - el7_install_pkg is defined
           yum: 
-            name: "{{ item. }}"
+            name: "{{ item }}"
             state: present
           with_items:
             - "{{ el7_install_pkg }}"
 
-- name: RedHat YUM update
+- name: RedHat YUM update packages
   when: 
     - ansible_os_family == 'RedHat' 
   yum:
