@@ -4,3 +4,5 @@ localhost
 192.168.99.100
 192.168.99.101
 
+[test:vars]
+ansible_user=vagrant
