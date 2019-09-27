@@ -2,7 +2,7 @@
 Welcome to my ansible playbooks!
 
 This is just some of the playbooks I had wrote for myself, or for the works I did.
-I tried to make sure the playbooks is generic and flexible for the general public to use/reuse/refer/modify, but there coudl be some mistakes/assumptions that you might want to check/verify before using them.
+I tried to make sure the playbooks is generic and flexible for the general public to use/reuse/refer/modify, but there could be some mistakes/assumptions that you might want to check/verify before using them.
 
 My standard layout of my ansible follow the Ansible Best Practice here http://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#directory-layout, with some simplication to suit my needs:
 
