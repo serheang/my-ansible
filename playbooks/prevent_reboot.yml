@@ -1,0 +1,80 @@
+- name: Prevent accidentally reboot/shutdown
+  hosts: all
+  become: yes
+  vars:
+  vars_files:
+  vars_prompt:
+  pre_tasks:
+  tasks:
+    - name: "Run only when is CentOS/RHEL 6"
+      when: ansible_distribution_major_version == "6"
+      block:
+        - name: "Setup command alias in root .bashrc"
+          blockinfile:
+            dest: /root/.bashrc
+            create: yes
+            insertafter: EOF
+            marker: "## {mark} Prevent accidentally reboot/shutdown"
+            block: |
+              alias reboot="echo -e 'Is \033[1;31m$HOSTNAME\033[0m the correct hostname you want to restart?'  'If yes, run \n\033[1;31m /sbin/reboot \033[0m' "
+              alias poweroff="echo -e 'Is \033[1;31m$HOSTNAME\033[0m the correct hostname you want to poweroff?'  'If yes, run \n\033[1;31m /sbin/poweroff \033[0m' "
+              alias shutdown="echo -e 'Is \033[1;31m$HOSTNAME\033[0m the correct hostname you want to shutdown?'  'If yes, run \n\033[1;31m /sbin/shutdown \033[0m' "
+
+    - name: "Run only when is CentOS/RHEL 7 or 8"
+      when: ansible_distribution_major_version == "7" or ansible_distribution_major_version == "8"
+      block:
+        - name: "Setup command alias in root .bashrc"
+          blockinfile:
+            dest: /root/.bashrc
+            create: yes
+            insertafter: EOF
+            marker: "## {mark} Prevent accidentally reboot/shutdown"
+            block: |
+              alias reboot="echo -e 'Is \033[1;31m$HOSTNAME\033[0m the correct hostname you want to restart?'  'If yes, run \n\033[1;31m systemctl disable reboot-guard.service && /sbin/reboot \033[0m' "
+              alias poweroff="echo -e 'Is \033[1;31m$HOSTNAME\033[0m the correct hostname you want to poweroff?'  'If yes, run \n\033[1;31m systemctl disable reboot-guard.service && /sbin/poweroff \033[0m' "
+              alias shutdown="echo -e 'Is \033[1;31m$HOSTNAME\033[0m the correct hostname you want to shutdown?'  'If yes, run \n\033[1;31m systemctl disable reboot-guard.service && /sbin/shutdown \033[0m' "
+        - name: "Create systemd reboot-guard.service"
+          blockinfile:
+            dest: /etc/systemd/system/reboot-guard.service
+            create: yes
+            mode: 0600
+            block: |
+              [Unit]
+              Description=Reboot Guard
+              [Service]
+              ExecStart=/bin/true
+              [Install]
+              RequiredBy=shutdown.target
+          notify: enable_reboot_guard
+        - name: "Create systemd start-reboot-guard.service"
+          blockinfile:
+            dest: /etc/systemd/system/start-reboot-guard.service
+            create: yes
+            mode: 0600
+            block: |
+              [Unit]
+              Description=Start Reboot Guard
+              [Service]
+              ExecStart=/bin/systemctl enable reboot-guard.service
+              [Install]
+              WantedBy=multi-user.target
+          notify: enable_reboot_guard
+
+  post_tasks:
+  handlers:
+    - name: "Enable reboot-guard"
+      listen: enable_reboot_guard
+      systemd:
+        name: reboot-guard
+        enabled: yes
+        state: started
+    - name: "Enable start-reboot-guard"
+      listen: enable_reboot_guard
+      systemd:
+        name: start-reboot-guard
+        enabled: yes
+        state: started
+    - name: "Systemd daemon reload"
+      listen: enable_reboot_guard
+      systemd:
+        daemon_reload: yes
