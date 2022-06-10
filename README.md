@@ -40,4 +40,7 @@ My standard layout of my ansible follow the Ansible Best Practice here http://do
         webtier/              # same kind of structure as "common" was above, done for the webtier role
         monitoring/           # ""
     playbooks/                # adhoc playbooks
-    
+
+## Playbooks  
+
+- prevent_reboot.yml - this playbook is written based on the suggesstions found in this [link](https://www.2daygeek.com/how-to-avoid-or-prevent-accidental-shutdown-or-reboot-on-linux/) and this [RedHat KB](https://access.redhat.com/solutions/1580343). 
