@@ -1,0 +1,23 @@
+---
+- name: Test
+  hosts: all
+  vars:
+    pkgs:
+      - httpd
+      - ansible
+  tasks:
+    - name: "Only run if is CentOS/RHEL/Fedora (yum)"
+      when:
+        - ansible_pkg_mgr == "yum"
+      block:
+        - name: "Repoquery pkgs"
+          shell: "repoquery -l {{ item }}"
+          loop:
+            "{{ pkgs }}"
+          register: pkgs_output
+        - name: Debug
+          debug:
+            msg: "this is {{ item.cmd }}"
+          loop: "{{ pkgs_output.results }}"
+          loop_control:
+            label: ""
