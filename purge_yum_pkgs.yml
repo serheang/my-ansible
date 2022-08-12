@@ -1,0 +1,48 @@
+---
+- name: Test
+  hosts: all
+  become: yes
+  vars:
+    pkgs:
+      - httpd
+      - httpd-tools
+      - apr
+      - apr-util
+      - mailcap
+    pkgs_state: "installed"
+  tasks:
+    - name: "Only run if is CentOS/RHEL/Fedora (yum)"
+      when:
+        - ansible_pkg_mgr == "yum"
+      block:
+        - name: "Install packages"
+          when:
+            - pkgs_state == "installed"
+          yum:
+            name: "{{ pkgs }}"
+            state: installed
+            update_cache: yes
+        - name: "Uninstall packages"
+          when:
+            - pkgs_state == "removed"
+          block:
+            - name: "Query config files/directories"
+              shell: "rpm -qlc {{ item }}"
+              register: pkgs_output
+              loop:
+                "{{ pkgs }}"
+              loop_control:
+                label: "Removing"
+            - name: "REMOVE other files"
+              file:
+                path: "{{ item }}"
+                state: absent
+                force: yes
+              loop: "{{ pkgs_output.results| map(attribute='stdout_lines')| list | flatten(1) }}"
+              loop_control:
+                label: "Removing"
+            - name: "Remove package"
+              yum:
+                name: "{{ pkgs }}"
+                autoremove: yes
+                state: absent
