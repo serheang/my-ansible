@@ -1,0 +1,58 @@
+---
+# tasks file for sudo
+- name: Ensure sudoer package installed
+  package:
+    name: "sudo"
+    state: installed
+
+- name: Make sure we have a 'wheel' group
+  group:
+    name: "wheel"
+    state: present
+
+- name: Setup sudoers
+  block:
+    - name: Allow %wheel group
+      lineinfile:
+        dest: "/etc/sudoers"
+        regexp: '^%wheel.*'
+        line: "%wheel ALL=(ALL) ALL"
+        insertbefore: '^## Read drop-in files from /etc/sudoers.d .*'
+        validate: '/sbin/visudo -cf %s'
+    - name: Customize sudo
+      blockinfile:
+        path: "/etc/sudoers"
+        insertbefore: '^## Read drop-in files from /etc/sudoers.d .*'
+        block: |
+          {{ custom_sudoers }}
+        validate: '/sbin/visudo -cf %s'
+      when: custom_sudoers is defined
+
+- name: Setup individual sudo_user /etc/sudoers.d/
+  when: sudoers is defined
+  block:
+    - name: sudo with password
+      template:
+        src: sudo.j2
+        dest: "/etc/sudoers.d/10_{{ item.username }}"
+        mode: "0440"
+        validate: '/sbin/visudo -cf %s'
+      when: item.sudo_user is defined
+      with_items: "{{ sudoers }}"
+    - name: Setup sudo_user_nopasswd conf
+      template:
+        src: sudo_nopasswd.j2
+        dest: "/etc/sudoers.d/10_{{ item.username }}"
+        mode: "0440"
+        validate: '/sbin/visudo -cf %s'
+      when: item.sudo_user_nopasswd is defined
+      with_items: "{{ sudoers }}"
+    - name: Setup sudo_user_custom
+      template:
+        src: custom_user_sudo.j2
+        dest: "/etc/sudoers.d/10_{{ item.username }}"
+        mode: "0440"
+        validate: '/sbin/visudo -cf %s'
+      when: item.sudo_user_custom is defined
+      with_items: "{{ sudoers }}"
+

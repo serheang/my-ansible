@@ -1,0 +1,12 @@
+---
+# defaults file for sudo
+sudoers:
+  - username: "admin"
+    sudo_user: yes
+  - username: "root"
+    sudo_user_nopasswd: yes
+
+custom_sudoers: "
+# Test \n 
+admin     ALL=(ALL) ALL \n 
+"
